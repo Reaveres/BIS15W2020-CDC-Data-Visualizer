@@ -22,7 +22,8 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Cause of Death by Year", tabName = "app1", icon = icon("calendar-alt")),
-      menuItem("Age Group Mortality", tabName = "app2", icon = icon("feather"))
+      menuItem("Age Group Mortality", tabName = "app2", icon = icon("feather")),
+      menuItem("Race", tabName="app3", icon=icon("address-book"))
       
       
       
@@ -232,7 +233,16 @@ ui <- dashboardPage(
                 box(width = 12,
                     plotOutput("app2", width = "800px", height = "500px")))
               
-      )
+      ),
+      
+      
+      tabItem(tabName="app3",
+              fluidRow(
+                box(title = "Graph")
+              )
+              
+              
+              )
       
     )))
 
