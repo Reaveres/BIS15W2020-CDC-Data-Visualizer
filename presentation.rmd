@@ -8,13 +8,17 @@ output: ioslides_presentation
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
 ```
 
 
 <!-- Lia -->
 ## OUR INTERESTS 
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+- <font size="8">Health data: </font>
+- <font size="6">How are people dying? </font>
+- <font size="6">How does this change based on different groups? </font>
+- <font size="6"><font color="light blue">Center for Disease Control: race, age, year, cause of death, etc. data </font></font>
 
 <!-- Dawson -->
 ## TWO PROBLEMS
@@ -38,8 +42,12 @@ This is an R Markdown presentation. Markdown is a simple formatting syntax for a
 <!-- Lia -->
 ## DATA CLEAN UP
 
-```{r cars, echo = TRUE}
-summary(cars)
+```{r message=FALSE, warning=FALSE}
+cdc_1999 <- readr::read_csv("data/raw/year_1999.csv")
+```
+
+```{r cdc, echo = TRUE}
+glimpse(cdc_1999)
 ```
 
 <!-- Dawson -->
