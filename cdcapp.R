@@ -242,13 +242,14 @@ ui <- dashboardPage(
       
       tabItem(tabName= "app3",
               fluidRow(
-                box(title = "Graph Options", width = 12,
+                box(title = "Cause of Death Options", width = 12,
                     selectInput("app3_death", "Select Cause of Death", choices = c(levels(cdc$cause_of_death)),
-                                selected = "Falls (W00-W19)"),
-                    radioButtons("app3_year", "Select Year", choices = c(levels(as.factor(cdc$year))),
-                                 selected = "1999"))),
+                                selected = "Falls (W00-W19)"))),
               fluidRow(
-                box(width = 12,
+                box(title = "Year Options", width = 4,
+                    radioButtons("app3_year", "Select Year", choices = c(levels(as.factor(cdc$year))),
+                                 selected = "1999")),
+                box(title = "Graph", width = 8,
                     plotOutput("app3", width = "800px", height = "500px")))
               ),
       
