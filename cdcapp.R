@@ -26,7 +26,8 @@ ui <- dashboardPage(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Cause of Death by Year", tabName = "app1", icon = icon("calendar-alt")),
       menuItem("Age Group Mortality", tabName = "app2", icon = icon("feather")),
-      menuItem("Race", tabName="app3", icon=icon("address-book"))
+      menuItem("Cause of Death by Race", tabName="app3", icon=icon("address-book")),
+      menuItem("Cause of Death by Gender", tabName="app4", icon=icon("venus-mars"))
       
       
       
@@ -248,7 +249,18 @@ ui <- dashboardPage(
                                  selected = "1999"))),
               fluidRow(
                 box(width = 12,
-                    plotOutput("app3", width = "800px", height = "500px"))))
+                    plotOutput("app3", width = "800px", height = "500px")))
+              ),
+      
+      tabItem(tabName= "app4",
+              fluidRow(
+                box(title = "Graph Options", width = 12,
+                    selectInput("app4_death", "Select Cause of Death", choices = c(levels(cdc$cause_of_death)),
+                                selected = "Falls (W00-W19)"))),
+              fluidRow(
+                box(width = 12,
+                    plotOutput("app4", width = "800px", height = "500px")))
+      )
       
     )))
 
@@ -342,6 +354,25 @@ server <- function(input, output, session) {
             axis.text.x = element_text(angle = 90, hjust=1),
             axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   })
+  
+  output$app4 <- renderPlot({
+    
+    cdc %>% 
+      filter(cause_of_death == input$app4_death) %>% 
+      group_by(gender, year) %>%
+      summarise(
+        population = sum(population, na.rm=T),
+        total_deaths = sum(deaths),
+        percent= (total_deaths/population)*100
+      ) %>%
+      ggplot(aes(x = year, y =percent, color = gender)) +
+      geom_point(aes(shape = gender, size = 3))+
+      labs(title="Deaths in The United States by Gender", y="Percent of Population", x="Year")+
+      theme(plot.title = element_text(size = 14, face = "bold", vjust = 3.5, hjust=.5, margin = margin(t=15, b=10)),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 12),
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))})
   
   session$onSessionEnded(stopApp)
   
