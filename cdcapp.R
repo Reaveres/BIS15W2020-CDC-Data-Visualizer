@@ -15,6 +15,9 @@ options(scipen = 999)
 ## Load CDC Data ## 
 cdc <- readr::read_csv("data/cdc.csv", col_types = cols(X1 = col_skip()))
 
+cdc$race <- as.factor(cdc$race)
+cdc$cause_of_death <- as.factor(cdc$cause_of_death)
+
 
 ui <- dashboardPage(
   dashboardHeader(title = "CDC Data Viewer"),
@@ -22,7 +25,8 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Cause of Death by Year", tabName = "app1", icon = icon("calendar-alt")),
-      menuItem("Age Group Mortality", tabName = "app2", icon = icon("feather"))
+      menuItem("Age Group Mortality", tabName = "app2", icon = icon("feather")),
+      menuItem("Race", tabName="app3", icon=icon("address-book"))
       
       
       
@@ -232,7 +236,19 @@ ui <- dashboardPage(
                 box(width = 12,
                     plotOutput("app2", width = "800px", height = "500px")))
               
-      )
+      ),
+      
+      
+      tabItem(tabName= "app3",
+              fluidRow(
+                box(title = "Graph Options", width = 12,
+                    selectInput("app3_death", "Select Cause of Death", choices = c(levels(cdc$cause_of_death)),
+                                selected = "Falls (W00-W19)"),
+                    radioButtons("app3_year", "Select Year", choices = c(levels(as.factor(cdc$year))),
+                                 selected = "1999"))),
+              fluidRow(
+                box(width = 12,
+                    plotOutput("app3", width = "800px", height = "500px"))))
       
     )))
 
@@ -308,6 +324,23 @@ server <- function(input, output, session) {
             axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
     
     
+  })
+  
+  output$app3 <- renderPlot({
+    cdc %>% 
+      filter(cause_of_death ==input$app3_death & year == input$app3_year) %>% 
+      group_by(race) %>%
+      summarise(population = sum(population, na.rm = T),
+                total_deaths = sum(deaths),
+                per100k = (total_deaths/population)*100000) %>%
+      ggplot(aes_string(x = "race", y = "per100k", fill = "race")) +
+      geom_col(position = "dodge") +
+      coord_flip()+
+      labs(title="Deaths in The United States", y="Deaths per 100k", x="Race", color=NULL,fill=NULL)+
+      theme(plot.title = element_text(size = 14, face = "bold", vjust = 3.5, hjust=.5, margin = margin(t=15, b=10)),
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.text.x = element_text(angle = 90, hjust=1),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   })
   
   session$onSessionEnded(stopApp)
