@@ -318,13 +318,14 @@ server <- function(input, output, session) {
     cdc %>% 
       group_by(age_group, gender, year) %>% 
       filter(year== input$app2_year) %>% 
+      filter(age_group != "Not Stated") %>% 
       summarize(
         total_deaths = sum(deaths),
         total_population = sum(population),
         death_per_100k = total_deaths/total_population*100000,
         percent_of_group = total_deaths/total_population) %>% 
     
-      ggplot(aes_string(x="age_group", y=input$app2_measure))+geom_bar(position="dodge",stat="identity")+
+      ggplot(aes_string(x="age_group", y=input$app2_measure, fill="gender"))+geom_bar(position="dodge",stat="identity")+
       labs(
         title= "Deaths by Age Group",
         x= "Age Group",
@@ -333,7 +334,6 @@ server <- function(input, output, session) {
         fill=NULL)+
       theme(plot.title = element_text(size = 14, face = "bold", vjust = 3.5, hjust=.5, margin = margin(t=15, b=10)),
             axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
-            axis.text.x = element_text(angle = 90, hjust=1),
             axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
     
     
